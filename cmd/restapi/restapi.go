@@ -39,7 +39,7 @@ func main() {
 	`, *restUri, *limitConf, limitRules)
 
 	// create limiter, note, requests are limited per IP not request, hence can reuse
-	lb := leakybucket.NewSafeLeakyBucket(limitRules)
+	var lb leakybucket.LeakyBucket = leakybucket.NewSafeLeakyBucket(limitRules)
 
 	var pingHandler gin.HandlerFunc = func(c *gin.Context) {
 		c.JSON(200, gin.H{
@@ -75,7 +75,7 @@ func main() {
 	r := gin.Default()
 	r.GET("/ping", pingHandler)
 	r.GET("/health", healthHandler)
-	r.GET("/pingLimited", decorator.Decorate(lb, &pingHandler))
-	r.GET("/healthLimited", decorator.Decorate(lb, &healthHandler))
+	r.GET("/pingLimited", decorator.Decorate(&lb, &pingHandler))
+	r.GET("/healthLimited", decorator.Decorate(&lb, &healthHandler))
 	r.Run(*restUri)
 }

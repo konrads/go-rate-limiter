@@ -33,13 +33,19 @@ To run docker container
 docker run --rm -ti -p8080:8080 goratelimiter.restapi
 ```
 
+To run from cmd line
+--------------------
+```
+go run cmd/restapi/restapi.go
+```
+
 To run tests
 ------------
 ```
 # unit tests
 go test ./... -v
 
-# manual end-2-end tests, note, requires running container as per above
+# manual end-2-end tests, note, requires running the server either via cmd line or docker container
 ./manual-test.sh
 ```
 
