@@ -6,11 +6,11 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/konrads/go-rate-limiter/pkg/db"
 	"github.com/konrads/go-rate-limiter/pkg/decorator"
-	"github.com/konrads/go-rate-limiter/pkg/limiter"
+	"github.com/konrads/go-rate-limiter/pkg/leakybucket"
 	"github.com/konrads/go-rate-limiter/pkg/model"
 )
 
@@ -38,11 +38,8 @@ func main() {
 	- limitRules: %v
 	`, *restUri, *limitConf, limitRules)
 
-	// init memory db
-	var db db.DB = db.NewMemDb()
-
 	// create limiter, note, requests are limited per IP not request, hence can reuse
-	l := limiter.NewLimiter(limitRules, &db)
+	lb := leakybucket.NewSafeLeakyBucket(limitRules)
 
 	var pingHandler gin.HandlerFunc = func(c *gin.Context) {
 		c.JSON(200, gin.H{
@@ -55,11 +52,30 @@ func main() {
 		})
 	}
 
-	// init server and routes
+	// setup cleanup ticker
+	ticker := time.NewTicker(10 * time.Second)
+	done := make(chan bool)
+	defer func() {
+		done <- true
+		defer ticker.Stop()
+	}()
+	go func() {
+		for {
+			select {
+			case <-done:
+				return
+			case t := <-ticker.C:
+				lb.Cleanup(t)
+				log.Printf("...cleanup, storage stats: %d", lb.Stats())
+			}
+		}
+	}()
+
+	// init gin server and routes
 	r := gin.Default()
 	r.GET("/ping", pingHandler)
 	r.GET("/health", healthHandler)
-	r.GET("/pingLimited", decorator.Decorate(&l, &pingHandler))
-	r.GET("/healthLimited", decorator.Decorate(&l, &healthHandler))
+	r.GET("/pingLimited", decorator.Decorate(lb, &pingHandler))
+	r.GET("/healthLimited", decorator.Decorate(lb, &healthHandler))
 	r.Run(*restUri)
 }
