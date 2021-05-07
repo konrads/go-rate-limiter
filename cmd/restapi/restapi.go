@@ -20,11 +20,6 @@ func main() {
 	limitConf := flag.String("limit-conf", "limits.json", "config file for limit")
 	flag.Parse()
 
-	log.Printf(`Starting restapi service with params:
-	- restUri:   %s
-	- limitConf: %s
-	`, *restUri, *limitConf)
-
 	// fetch the conf file
 	limitConfFile, err := os.Open(*limitConf)
 	if err != nil {
@@ -36,6 +31,12 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to parse config file: %s", *limitConf)
 	}
+
+	log.Printf(`Starting restapi service with params:
+	- restUri:    %s
+	- limitConf:  %s
+	- limitRules: %v
+	`, *restUri, *limitConf, limitRules)
 
 	// init memory db
 	var db db.DB = db.NewMemDb()

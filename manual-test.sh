@@ -61,13 +61,13 @@ assert_eq "resp2 health"  "$resp2" "good"
 assert_eq "resp3 message" "$resp3" "pong"
 assert_eq "resp4 health"  "$resp4" "good"
 assert_eq "resp5 message" "$resp5" "pong"
-assert_eq "resp6 error"   "$resp6" "Rate limit breached due to rule: {5 10}"
+assert_eq "resp6 error"   "$resp6" "Rate limit breached due to rule: {5 10s}"
 
 sleep 8
 resp7=`curl localhost:8080/pingLimited | jq -r '.message'`
 resp8=`curl localhost:8080/healthLimited | jq -r '.error'`
 echo $resp7 $resp8
 #assert_eq "resp7 message" "$resp7" "pong"
-assert_eq "resp8 error"   "$resp8" "Rate limit breached due to rule: {7 20}"
+assert_eq "resp8 error"   "$resp8" "Rate limit breached due to rule: {7 20s}"
 
 log_success "Success!"

@@ -36,6 +36,7 @@ func (db *MemDb) GetHits(ip string, minHit int64) *[]int64 {
 }
 
 func (db *MemDb) Cleanup(ip string, minHit int64) {
+	// FIXME: occasionally do a full scan and cleanup out-of-date ips
 	if hits, ok := db.byIP[ip]; ok {
 		truncated := utils.DropWhile(hits, func(x int64) bool { return x < minHit })
 		db.byIP[ip] = truncated

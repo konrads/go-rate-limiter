@@ -5,8 +5,8 @@ Rate limiting implementation that decorates a handler with limiting capabilities
 ```
 [
   {Limit: 5, Duration: 10},
-	{Limit: 7, Duration: 20},
-	{Limit: 9, Duration: 30}
+  {Limit: 7, Duration: 20},
+  {Limit: 9, Duration: 30}
 ]
 ```
 
@@ -33,9 +33,17 @@ To run docker container
 docker run --rm -ti -p8080:8080 goratelimiter.restapi
 ```
 
-To run manual tests
--------------------
+To run tests
+------------
 ```
-# build the docker image and run the container, as above
+# unit tests
+go test ./... -v
+
+# manual end-2-end tests, note, requires running container as per above
 ./manual-test.sh
 ```
+
+Unesolved issues
+----------------
+* Current implemnetation of `leakybucket` utilizes slices, which leak memory as they grow
+* Can have race conditions within gin handler

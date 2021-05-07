@@ -12,7 +12,7 @@ import (
 func Decorate(l *limiter.Limiter, handler *gin.HandlerFunc) gin.HandlerFunc {
 	var decorated gin.HandlerFunc = func(c *gin.Context) {
 		ip := c.ClientIP()
-		now := time.Now().Unix()
+		now := time.Now()
 		rejectRule := l.GetRejectionRule(ip, now)
 		if rejectRule != nil {
 			c.JSON(http.StatusTooManyRequests, gin.H{
