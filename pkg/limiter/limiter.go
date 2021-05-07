@@ -9,6 +9,8 @@ import (
 	"github.com/konrads/go-rate-limiter/pkg/model"
 )
 
+// Deprecated: attempt at mimiter that should be able to use pluggable DB.
+// Not memory efficient...
 type Limiter struct {
 	templateRules model.LimitRules
 	db            *db.DB

@@ -45,5 +45,4 @@ go test ./... -v
 
 Unesolved issues
 ----------------
-* Current implemnetation of `leakybucket` utilizes slices, which leak memory as they grow
-* Can have race conditions within gin handler
+* Current implementation of `leakybucket` utilizes slices, which leak memory as they grow. Attempt has been made to use `CircularQueue`, but that would drop awareness of rejected requests... Need some time based sliding window instead...
