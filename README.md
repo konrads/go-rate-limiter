@@ -4,9 +4,9 @@ Rate Limiter
 Rate limiting implementation that decorates a handler with limiting capabilities. Returns 429 should limiting rules are exceeded. The rules look like [limits.json](limits.json):
 ```
 [
-  {Limit: 5, Duration: 10},
-  {Limit: 7, Duration: 20},
-  {Limit: 9, Duration: 30}
+    {"Limit": 5, "Duration": "10s"},
+    {"Limit": 7, "Duration": "20s"},
+    {"Limit": 9, "Duration": "30s"}
 ]
 ```
 
